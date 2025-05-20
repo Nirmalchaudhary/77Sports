@@ -19,7 +19,7 @@ const CategoryManagement = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/admin/categories', {
+      const response = await axios.get('http://localhost:5000/api/categories/admin', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

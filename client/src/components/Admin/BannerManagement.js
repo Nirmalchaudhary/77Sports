@@ -19,7 +19,7 @@ const BannerManagement = () => {
   const fetchBanners = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/admin/banners', {
+      const response = await axios.get('http://localhost:5000/api/banners/admin', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -41,7 +41,7 @@ const BannerManagement = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/admin/banners', newBanner, {
+      await axios.post('http://localhost:5000/api/banners/admin', newBanner, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -65,7 +65,7 @@ const BannerManagement = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/admin/banners/${editingBanner.id}`, editingBanner, {
+      await axios.put(`http://localhost:5000/api/banners/admin/${editingBanner.id}`, editingBanner, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -82,7 +82,7 @@ const BannerManagement = () => {
     if (window.confirm('Are you sure you want to delete this banner?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5000/api/admin/banners/${id}`, {
+        await axios.delete(`http://localhost:5000/api/banners/admin/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

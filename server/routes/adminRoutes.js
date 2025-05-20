@@ -7,12 +7,5 @@ const adminController = require('../controllers/adminController');
 router.get('/users', isAdmin, adminController.getAllUsers);
 router.post('/users', isAdmin, adminController.createUser);
 
-// Category Management Routes
-router.get('/categories', isAdmin, adminController.getAllCategories);
-router.post('/categories', isAdmin, adminController.createCategory);
-
-// Banner Management Routes
-router.get('/banners', isAdmin, adminController.getAllBanners);
-router.post('/banners', isAdmin, adminController.createBanner);
 
 module.exports = router; 
