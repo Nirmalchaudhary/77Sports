@@ -3,8 +3,26 @@ const { Product, Category } = require('../models');
 const productController = {
     getAllProducts: async (req, res) => {
         try {
+            let whereCondition = {};
+            if (req.query.categoryId) {
+                whereCondition.categoryId = req.query.categoryId;
+            }
             const products = await Product.findAll({
                 include: [{ model: Category, as: 'category' }],
+                where: whereCondition,
+                order: [['createdAt', 'DESC']]
+            });
+            res.json(products);
+        } catch (err) {
+            console.error('Error fetching products:', err);
+            res.status(500).json({ error: 'Failed to fetch products' });
+        }
+    },
+    getProduct: async (req, res) => {
+        try {
+            const products = await Product.findOne({
+                include: [{ model: Category, as: 'category' }],
+                where: {id: req.params.id},
                 order: [['createdAt', 'DESC']]
             });
             res.json(products);

@@ -6,6 +6,9 @@ const productController = require('../controllers/productController');
 // Get all products
 router.get('/admin', productController.getAllProducts);
 
+// Get product by id
+router.get('/admin/:id', productController.getProduct);
+
 // Create product
 router.post('/admin', authenticateToken, isAdmin, productController.createProduct);
 

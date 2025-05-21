@@ -1,143 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { products } from '../../data/staticData';
-import { useAuth } from '../../context/AuthContext';
-import { FaShoppingCart, FaHeart, FaStar } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart } from 'react-icons/fa';
+import axios from 'axios';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [quantity, setQuantity] = useState(1);
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Find the product from static data
-  const product = products.find(p => p.id === parseInt(id));
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/products/admin/${id}`);
+        setProduct(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError('Failed to fetch product details. Please try again later.');
+        setLoading(false);
+      }
+    };
 
-  if (!product) {
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-danger">Product not found</div>
-        <button className="btn btn-primary" onClick={() => navigate('/products')}>
-          Back to Products
-        </button>
+      <div className="container py-5 text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
     );
   }
 
-  const handleAddToCart = () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+  if (error) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
-    try {
-      // Get existing cart from localStorage
-      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-      
-      // Check if product already exists in cart
-      const existingItemIndex = existingCart.findIndex(item => item.id === product.id);
-      
-      if (existingItemIndex !== -1) {
-        // Update quantity if product exists
-        existingCart[existingItemIndex].quantity += quantity;
-      } else {
-        // Add new item if product doesn't exist
-        existingCart.push({
-          id: product.id,
-          name: product.name,
-          price: product.sellingPrice,
-          image: product.imageUrl,
-          quantity: quantity,
-          stockQuantity: product.stockQuantity
-        });
-      }
-
-      // Save updated cart to localStorage
-      localStorage.setItem('cart', JSON.stringify(existingCart));
-      
-      // Show success message
-      setAddedToCart(true);
-
-      // Reset added to cart message after 2 seconds
-      setTimeout(() => setAddedToCart(false), 2000);
-
-      // Optional: Show a toast or notification
-      alert('Product added to cart successfully!');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Error adding product to cart. Please try again.');
-    }
-  };
+  if (!product) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="alert alert-warning" role="alert">
+          Product not found
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mt-5">
+    <div className="container py-5">
       <div className="row">
         <div className="col-md-6">
           <img 
             src={product.imageUrl} 
             alt={product.name} 
-            className="img-fluid rounded shadow"
+            className="img-fluid rounded"
             style={{ maxHeight: '500px', objectFit: 'contain' }}
           />
         </div>
         <div className="col-md-6">
-          <h1 className="mb-4">{product.name}</h1>
+          <h1 className="mb-3">{product.name}</h1>
+          <p className="text-muted mb-4">{product.description}</p>
+          
           <div className="mb-4">
-            <h4 className="text-primary">₹{product.sellingPrice}</h4>
-            <p className="text-muted text-decoration-line-through">MRP: ₹{product.mrp}</p>
-            <p className="text-success">
-              Save: ₹{product.mrp - product.sellingPrice} ({Math.round((1 - product.sellingPrice/product.mrp) * 100)}% off)
-            </p>
+            <h3 className="text-primary mb-2">₹{product.sellingPrice}</h3>
+            {product.mrp > product.sellingPrice && (
+              <span className="text-muted text-decoration-line-through">
+                ₹{product.mrp}
+              </span>
+            )}
           </div>
+
           <div className="mb-4">
-            <h5>Description</h5>
-            <p>{product.description}</p>
+            <h5>Product Details</h5>
+            <ul className="list-unstyled">
+              <li><strong>Category:</strong> {product.category?.name}</li>
+              <li><strong>Stock:</strong> {product.stockQuantity} units</li>
+              {product.isReturn && <li><strong>Return Policy:</strong> Available</li>}
+              {product.isExchange && <li><strong>Exchange Policy:</strong> Available</li>}
+            </ul>
           </div>
-          <div className="mb-4">
-            <h5>Stock Status</h5>
-            <p className={product.stockQuantity > 0 ? 'text-success' : 'text-danger'}>
-              {product.stockQuantity > 0 ? `In Stock (${product.stockQuantity} available)` : 'Out of Stock'}
-            </p>
-          </div>
-          <div className="mb-4">
-            <h5>Quantity</h5>
-            <div className="quantity-selector">
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <i className="fas fa-minus"></i>
-              </button>
-              <input 
-                type="number" 
-                className="quantity-input" 
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                min="1"
-                max={product.stockQuantity}
-              />
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
-              >
-                <i className="fas fa-plus"></i>
-              </button>
-            </div>
-          </div>
-          <div className="d-grid gap-2">
-            <button 
-              className={`btn btn-lg ${addedToCart ? 'btn-success' : 'btn-primary'}`}
-              onClick={handleAddToCart}
-              disabled={product.stockQuantity === 0}
-            >
-              {addedToCart ? 'Added to Cart!' : 'Add to Cart'}
+
+          <div className="d-flex gap-3">
+            <button className="btn btn-primary">
+              <FaShoppingCart className="me-2" />
+              Add to Cart
             </button>
-            <button 
-              className="btn btn-outline-primary"
-              onClick={() => navigate('/products')}
-            >
-              Continue Shopping
+            <button className="btn btn-outline-danger">
+              <FaHeart className="me-2" />
+              Add to Wishlist
             </button>
           </div>
         </div>

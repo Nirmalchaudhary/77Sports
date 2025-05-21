@@ -1,11 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaArrowRight } from 'react-icons/fa';
-import { categories, products, banners } from '../data/staticData';
+import axios from 'axios';
 
 const Home = () => {
   const { user } = useAuth();
+  const [banners, setBanners] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch banners
+        const bannersResponse = await axios.get('http://localhost:5000/api/banners/admin');
+        setBanners(bannersResponse.data);
+
+        // Fetch categories
+        const categoriesResponse = await axios.get('http://localhost:5000/api/categories/admin');
+        setCategories(categoriesResponse.data);
+
+        // Fetch featured products
+        const productsResponse = await axios.get('http://localhost:5000/api/products/admin');
+        setProducts(productsResponse.data);
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to fetch data. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-5">
@@ -59,7 +110,7 @@ const Home = () => {
               <Link to={`/products?category=${category.id}`} className="text-decoration-none">
                 <div className="card h-100 category-card">
                   <img 
-                    src={category.image} 
+                    src={category.imageUrl} 
                     className="card-img-top" 
                     alt={category.name}
                     style={{ height: '200px', objectFit: 'cover' }}
