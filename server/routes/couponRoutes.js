@@ -12,5 +12,6 @@ router.delete('/admin/:id', authenticateToken, isAdmin, couponController.deleteC
 
 // Public route
 router.get('/active', couponController.getActiveCoupons);
+router.post('/validate', couponController.validate);
 
 module.exports = router; 

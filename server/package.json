@@ -20,7 +20,7 @@
     "jsonwebtoken": "^8.5.1",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",
-    "mysql2": "^2.3.0",
+    "mysql2": "^2.3.3",
     "sequelize": "^6.6.5"
   },
   "description": "",

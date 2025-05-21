@@ -20,6 +20,9 @@ const Navbar = () => {
         <div className="space-x-4">
           {user ? (
             <>
+              <Link to="/my-orders" className="hover:text-gray-300">
+                My Orders
+              </Link>
               {user.role === 'admin' && (
                 <Link to="/admin" className="hover:text-gray-300">
                   Admin Panel

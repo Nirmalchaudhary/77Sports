@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const { authenticateToken } = require('./middleware/auth');
 const adminRoutes = require('./routes/adminRoutes');
 const sequelize = require('./config/database');
+const cartRoutes = require('./routes/cartRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/banners', require('./routes/bannerRoutes'));
+app.use('/api/cart', cartRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 // Admin routes
 app.use('/api/admin', authenticateToken, adminRoutes);
 

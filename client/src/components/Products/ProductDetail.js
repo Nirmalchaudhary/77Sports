@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaShoppingCart, FaHeart } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaExclamationTriangle, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
+import { useCart } from '../../context/CartContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,6 +10,16 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { addToCart, removeFromCart, cartItems } = useCart();
+
+  const isProductInCart = (productId) => {
+    return cartItems.some(item => item.product.id === productId);
+  };
+
+  const getCartItemId = (productId) => {
+    const cartItem = cartItems.find(item => item.product.id === productId);
+    return cartItem?.id;
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,6 +36,30 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [id]);
+
+  const handleCartAction = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      if (isProductInCart(product.id)) {
+        // If item is in cart, remove it
+        const cartItemId = getCartItemId(product.id);
+        await removeFromCart(cartItemId);
+        alert('Product removed from cart!');
+      } else {
+        // If item is not in cart, add it
+        await addToCart(product.id, 1);
+        alert('Product added to cart successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      alert('Failed to update cart. Please try again.');
+    }
+  };
 
   if (loading) {
     return (
@@ -90,11 +125,34 @@ const ProductDetail = () => {
             </ul>
           </div>
 
-          <div className="d-flex gap-3">
-            <button className="btn btn-primary">
-              <FaShoppingCart className="me-2" />
-              Add to Cart
+          {product.stockQuantity > 0 ? (
+            <button
+              className={`btn btn-lg ${isProductInCart(product.id) ? 'btn-danger' : 'btn-primary'} mb-3`}
+              onClick={handleCartAction}
+            >
+              {isProductInCart(product.id) ? (
+                <>
+                  <FaTrash className="me-2" />
+                  Remove from Cart
+                </>
+              ) : (
+                <>
+                  <FaShoppingCart className="me-2" />
+                  Add to Cart
+                </>
+              )}
             </button>
+          ) : (
+            <button
+              className="btn btn-lg btn-danger mb-3"
+              disabled
+            >
+              <FaExclamationTriangle className="me-2" />
+              Out of Stock
+            </button>
+          )}
+
+          <div className="d-flex gap-3">
             <button className="btn btn-outline-danger">
               <FaHeart className="me-2" />
               Add to Wishlist

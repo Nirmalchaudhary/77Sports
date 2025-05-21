@@ -6,6 +6,9 @@ const orderController = require('../controllers/orderController');
 // Get all orders
 router.get('/', authenticateToken, isAdmin, orderController.getAllOrders);
 
+// Get user orders
+router.get('/user/:userId', authenticateToken, orderController.getUserOrders);
+
 // Create order
 router.post('/', authenticateToken, orderController.createOrder);
 

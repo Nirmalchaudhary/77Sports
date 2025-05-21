@@ -1,47 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
+import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { cartItems, loading, updateCartItem, removeFromCart } = useCart();
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    // Get cart items from localStorage
-    const items = JSON.parse(localStorage.getItem('cart') || '[]');
-    setCartItems(items);
-    setLoading(false);
-  }, [user, navigate]);
-
-  const updateQuantity = (id, newQuantity) => {
+  const handleQuantityChange = async (cartItemId, newQuantity) => {
     if (newQuantity < 1) return;
-
-    const updatedItems = cartItems.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    );
-    setCartItems(updatedItems);
-    localStorage.setItem('cart', JSON.stringify(updatedItems));
+    try {
+      await updateCartItem(cartItemId, newQuantity);
+    } catch (error) {
+      alert('Failed to update quantity. Please try again.');
+    }
   };
 
-  const removeItem = (id) => {
-    const updatedItems = cartItems.filter(item => item.id !== id);
-    setCartItems(updatedItems);
-    localStorage.setItem('cart', JSON.stringify(updatedItems));
+  const handleRemoveItem = async (cartItemId) => {
+    try {
+      await removeFromCart(cartItemId);
+    } catch (error) {
+      alert('Failed to remove item. Please try again.');
+    }
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => {
+      return total + (item.product.sellingPrice * item.quantity);
+    }, 0);
   };
 
   if (loading) {
-    return <div className="container mt-5">Loading...</div>;
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -76,44 +72,44 @@ const Cart = () => {
                     <td>
                       <div className="d-flex align-items-center">
                         <img 
-                          src={item.image} 
-                          alt={item.name} 
+                          src={item.product.imageUrl} 
+                          alt={item.product.name} 
                           style={{ width: '50px', marginRight: '10px' }}
                         />
-                        {item.name}
+                        {item.product.name}
                       </div>
                     </td>
-                    <td>₹{item.price}</td>
+                    <td>₹{item.product.sellingPrice}</td>
                     <td>
                       <div className="quantity-selector">
                         <button 
                           className="quantity-btn"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                         >
-                          <i className="fas fa-minus"></i>
+                          <FaMinus />
                         </button>
                         <input 
                           type="number" 
                           className="quantity-input"
                           value={item.quantity}
-                          onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                          onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
                           min="1"
                         />
                         <button 
                           className="quantity-btn"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                         >
-                          <i className="fas fa-plus"></i>
+                          <FaPlus />
                         </button>
                       </div>
                     </td>
-                    <td>₹{item.price * item.quantity}</td>
+                    <td>₹{item.product.sellingPrice * item.quantity}</td>
                     <td>
                       <button 
                         className="btn btn-danger btn-sm"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => handleRemoveItem(item.id)}
                       >
-                        Remove
+                        <FaTrash />
                       </button>
                     </td>
                   </tr>

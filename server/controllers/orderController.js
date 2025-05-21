@@ -21,11 +21,32 @@ const orderController = {
         }
     },
 
+    getUserOrders: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const orders = await Order.findAll({
+                where: { userId },
+                include: [
+                    { 
+                        model: OrderItem, 
+                        as: 'orderItems',
+                        include: [{ model: Product, as: 'product' }]
+                    }
+                ],
+                order: [['createdAt', 'DESC']]
+            });
+            res.json(orders);
+        } catch (err) {
+            console.error('Error fetching user orders:', err);
+            res.status(500).json({ error: 'Failed to fetch user orders' });
+        }
+    },
+
     createOrder: async (req, res) => {
         try {
-            const { userId, items, totalAmount, shippingAddress } = req.body;
+            const { userId, items, totalAmount, shippingAddress, paymentMethod } = req.body;
 
-            if (!userId || !items || !totalAmount) {
+            if (!userId || !items || !totalAmount || !paymentMethod) {
                 return res.status(400).json({ error: 'Required fields missing' });
             }
 
@@ -33,7 +54,7 @@ const orderController = {
                 userId,
                 totalAmount,
                 shippingAddress,
-                status: 'pending'
+                status: 'pending',
             });
 
             // Create order items

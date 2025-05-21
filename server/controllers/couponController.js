@@ -197,7 +197,7 @@ const couponController = {
   // Validate coupon
   validate: async (req, res) => {
     try {
-      const { code, userId, amount } = req.body;
+      const { code , amount } = req.body;
       const now = new Date();
 
       const coupon = await Coupon.findOne({

@@ -15,31 +15,38 @@ import ProductManagement from './components/Admin/ProductManagement';
 import BannerManagement from './components/Admin/BannerManagement';
 import DiscountManagement from './components/Admin/DiscountManagement';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Checkout from './components/Checkout/Checkout';
+import MyOrders from './components/Orders/MyOrders';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-light">
-          <Navbar />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin/users" element={<UserManagement />} />
-            <Route path="/admin/categories" element={<CategoryManagement />} />
-            <Route path="/admin/products" element={<ProductManagement />} />
-            <Route path="/admin/banners" element={<BannerManagement />} />
-            <Route path="/admin/discounts" element={<DiscountManagement />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/products/:id" element={<ProductDetail />} />
-            <Route path="/categories" element={<CategoryList />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/" element={<Navigate to="/home" replace />} />
-          </Routes>
-        </div>
-      </Router>
+      <CartProvider>
+        <Router>
+          <div className="min-h-screen bg-light">
+            <Navbar />
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/users" element={<UserManagement />} />
+              <Route path="/admin/categories" element={<CategoryManagement />} />
+              <Route path="/admin/products" element={<ProductManagement />} />
+              <Route path="/admin/banners" element={<BannerManagement />} />
+              <Route path="/admin/discounts" element={<DiscountManagement />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
+              <Route path="/categories" element={<CategoryList />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/my-orders" element={<MyOrders />} />
+              <Route path="/" element={<Navigate to="/home" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }

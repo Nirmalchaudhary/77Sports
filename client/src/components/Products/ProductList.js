@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { FaShoppingCart, FaHeart } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
+import { useCart } from '../../context/CartContext';
 
 const ProductList = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +13,16 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { addToCart, removeFromCart, cartItems } = useCart();
+
+  const isProductInCart = (productId) => {
+    return cartItems.some(item => item.product.id === productId);
+  };
+
+  const getCartItemId = (productId) => {
+    const cartItem = cartItems.find(item => item.product.id === productId);
+    return cartItem?.id;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,8 +49,28 @@ const ProductList = () => {
     fetchData();
   }, [selectedCategory]);
 
-  const handleAddToCart = (product) => {
-    // Implementation of handleAddToCart function
+  const handleCartAction = async (product) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      if (isProductInCart(product.id)) {
+        // If item is in cart, remove it
+        const cartItemId = getCartItemId(product.id);
+        await removeFromCart(cartItemId);
+        alert('Product removed from cart!');
+      } else {
+        // If item is not in cart, add it
+        await addToCart(product.id, 1);
+        alert('Product added to cart successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      alert('Failed to update cart. Please try again.');
+    }
   };
 
   if (loading) {
@@ -108,9 +139,33 @@ const ProductList = () => {
                       </span>
                     )}
                   </div>
-                  <Link to={`/products/${product.id}`} className="btn btn-primary btn-sm">
-                    View Details
-                  </Link>
+                  <div className="d-flex gap-2">
+                    {product.stockQuantity > 0 ? (
+                      <button 
+                        className={`btn ${isProductInCart(product.id) ? 'btn-danger' : 'btn-primary'} btn-sm`}
+                        onClick={() => handleCartAction(product)}
+                      >
+                        {isProductInCart(product.id) ? (
+                          <>
+                            <FaTrash className="me-1" />
+                            Remove
+                          </>
+                        ) : (
+                          <>
+                            <FaShoppingCart className="me-1" />
+                            Add to Cart
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <button className="btn btn-secondary btn-sm" disabled>
+                        Out of Stock
+                      </button>
+                    )}
+                    <Link to={`/products/${product.id}`} className="btn btn-outline-primary btn-sm">
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
