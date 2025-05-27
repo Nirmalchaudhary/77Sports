@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaShoppingBag, FaUser, FaSignOutAlt, FaShoppingCart } from 'react-icons/fa';
+import ballImg from '../assets/images/ball.png'; // Assuming you have an image for the logo
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -13,37 +14,37 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark">
-      <div className="container">
-        <Link className="navbar-brand d-flex align-items-center" to="/home">
-          <FaShoppingBag className="me-2" />
-          77Sports
-        </Link>
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
+    <nav className="">
+      <div className="nav-head">
+        <div className="nav-logo">
+          <Link className="navbar-brand d-flex align-items-center" to="/home">
+            <FaShoppingBag className="me-2" />
+            77Sports
+          </Link>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+        </div>
+        <div className="Nav-main" id="navbarNav">
+          <ul className="nav-list">
+          <img src={ballImg} alt="" />
+            <li className="">
               <Link className="nav-link" to="/products">Products</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/categories">Categories</Link>
             </li>
-                <li className="nav-item">
-                  <Link className="nav-link d-flex align-items-center" to="/orders">
-                    <FaShoppingBag className="me-1" />
-                    My Orders
-                  </Link>
-                </li>
-
-          </ul>
-          <ul className="navbar-nav">
+            <li className="nav-item">
+              <Link className="nav-link d-flex align-items-center" to="/orders">
+                <FaShoppingBag className="me-1" />
+                My Orders
+              </Link>
+            </li>
             {user ? (
               <>
                 <li className="nav-item">
@@ -60,9 +61,6 @@ const Navbar = () => {
                     </Link>
                   </li>
                 )}
-                <li className="nav-item">
-                  <Link className="nav-link" to="/home">Home</Link>
-                </li>
                 <li className="nav-item">
                   <button className="btn btn-link nav-link d-flex align-items-center" onClick={handleLogout}>
                     <FaSignOutAlt className="me-1" />

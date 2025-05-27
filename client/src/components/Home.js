@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
+import '../App.css'
+import stump from '../assets/images/stump.png'
 
 const Home = () => {
   const { user } = useAuth();
@@ -61,18 +63,18 @@ const Home = () => {
   return (
     <div className="container py-5">
       {/* Banners Section */}
-      <div className="mb-5">
+      <div className="mb-5 main-banner">
         <div id="homeCarousel" className="carousel slide" data-bs-ride="carousel">
           <div className="carousel-inner rounded">
             {banners.map((banner, index) => (
               <div key={banner.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
                 <img 
                   src={banner.imageUrl} 
-                  className="d-block w-100" 
+                  className="d-block" 
                   alt={banner.title}
-                  style={{ height: '400px', objectFit: 'cover' }}
+                  style={{ height: '300px', objectFit: 'cover' }}
                 />
-                <div className="carousel-caption d-none d-md-block">
+                <div className="carousel-caption d-md-block font-monospace text-black fw-bolder">
                   <h2>{banner.title}</h2>
                   <p>{banner.description}</p>
                   <Link to={banner.link} className="btn btn-primary">
@@ -90,12 +92,15 @@ const Home = () => {
           </button>
         </div>
       </div>
+<div className="banner-img">
+      <img src={stump} alt="" />
+      </div>
 
       {/* Welcome Section */}
-      <div className="row justify-content-center mb-5">
-        <div className="col-md-8 text-center">
-          <div className="card shadow p-5">
-            <h1 className="mb-3">Welcome to 77Sports, {user?.username}!</h1>
+      <div>
+        <div className="col-md-8 text-center ">
+          <div className="card shadow p-5 discription-main">
+            <h1 className="mb-3">Welcome to 77Sports</h1>
             <p className="lead">Your ultimate destination for cricket equipment and gear. Explore our wide range of products and find everything you need for your cricketing journey.</p>
           </div>
         </div>
