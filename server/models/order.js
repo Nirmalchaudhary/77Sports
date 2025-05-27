@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    // paymentMethod: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    //   defaultValue: 'COD'
+    // }
     // trackingNumber: {
     //   type: DataTypes.STRING
     // }

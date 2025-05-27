@@ -40,7 +40,7 @@ const Navbar = () => {
               <Link className="nav-link" to="/categories">Categories</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link d-flex align-items-center" to="/orders">
+              <Link className="nav-link d-flex align-items-center" to="/my-orders">
                 <FaShoppingBag className="me-1" />
                 My Orders
               </Link>

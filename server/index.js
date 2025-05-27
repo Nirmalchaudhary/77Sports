@@ -7,11 +7,15 @@ const adminRoutes = require('./routes/adminRoutes');
 const sequelize = require('./config/database');
 const cartRoutes = require('./routes/cartRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -20,7 +24,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/banners', require('./routes/bannerRoutes'));
 app.use('/api/cart', cartRoutes);
@@ -42,7 +46,7 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 // Database connection and server start
-async function startServer() {
+const startServer = async () => {
   try {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
@@ -58,7 +62,7 @@ async function startServer() {
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
-}
+};
 
 startServer();
 

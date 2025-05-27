@@ -23,7 +23,8 @@ const orderController = {
 
     getUserOrders: async (req, res) => {
         try {
-            const { userId } = req.params;
+            const  userId = req.params.userId;
+            console.log(userId)
             const orders = await Order.findAll({
                 where: { userId },
                 include: [
