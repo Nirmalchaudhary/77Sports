@@ -24,7 +24,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="min-h-screen bg-light">
+          <div className="min-h-screen font-monospace">
             <Navbar />
             <Routes>
               <Route path="/login" element={<Login />} />

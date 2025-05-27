@@ -20,6 +20,7 @@ const Checkout = () => {
     pincode: '',
     country: 'India'
   });
+  const [deliveryCharges, setDeliveryCharges] = useState(0);
 
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
@@ -28,7 +29,8 @@ const Checkout = () => {
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() - discount;
+    const subtotal = calculateSubtotal() - discount;
+    return subtotal + deliveryCharges;
   };
 
   const handleApplyCoupon = async () => {
@@ -59,54 +61,60 @@ const Checkout = () => {
     setCouponError('');
   };
 
-const handlePlaceOrder = async () => {
-  if (!selectedPaymentMethod) {
-    alert('Please select a payment method first');
-    return;
-  }
+  const handlePaymentMethodChange = (e) => {
+    const method = e.target.value;
+    setSelectedPaymentMethod(method);
+    setDeliveryCharges(method === 'cod' ? 200 : 0);
+  };
 
-  if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.pincode) {
-    alert('Please fill in all shipping address details');
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(localStorage.getItem('user'));
-    const userId = userData?.id;
-
-    if (!userId) {
-      alert('Please login to place an order');
-      navigate('/login');
+  const handlePlaceOrder = async () => {
+    if (!selectedPaymentMethod) {
+      alert('Please select a payment method first');
       return;
     }
 
-    // Create a single string from the address components
-    const fullAddress = `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pincode}, ${shippingAddress.country}`;
+    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.pincode) {
+      alert('Please fill in all shipping address details');
+      return;
+    }
 
-    await axios.post(
-      'http://localhost:5000/api/orders',
-      {
-        userId,
-        items: cartItems.map(item => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.sellingPrice
-        })),
-        totalAmount: calculateTotal(),
-        shippingAddress: fullAddress,  // Send as single string instead of object
-        paymentMethod: selectedPaymentMethod,
-        couponCode: couponCode || undefined
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    alert('Order placed successfully!');
-    clearCart();
-    navigate('/');
-  } catch (error) {
-    alert('Failed to place order. Please try again.');
-  }
-};
+    try {
+      const token = localStorage.getItem('token');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const userId = userData?.id;
+
+      if (!userId) {
+        alert('Please login to place an order');
+        navigate('/login');
+        return;
+      }
+
+      // Create a single string from the address components
+      const fullAddress = `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pincode}, ${shippingAddress.country}`;
+
+      await axios.post(
+        'http://localhost:5000/api/orders',
+        {
+          userId,
+          items: cartItems.map(item => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            price: item.product.sellingPrice
+          })),
+          totalAmount: calculateTotal(),
+          shippingAddress: fullAddress,  // Send as single string instead of object
+          paymentMethod: selectedPaymentMethod,
+          couponCode: couponCode || undefined
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Order placed successfully!');
+      clearCart();
+      navigate('/');
+    } catch (error) {
+      alert('Failed to place order. Please try again.');
+    }
+  };
 
   if (loading) {
     return (
@@ -182,6 +190,12 @@ const handlePlaceOrder = async () => {
                   <div className="d-flex justify-content-between mb-2 text-success">
                     <span>Discount</span>
                     <span>-₹{discount}</span>
+                  </div>
+                )}
+                {deliveryCharges > 0 && (
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Delivery Charges</span>
+                    <span>₹{deliveryCharges}</span>
                   </div>
                 )}
                 <div className="d-flex justify-content-between mb-2">
@@ -303,7 +317,7 @@ const handlePlaceOrder = async () => {
                         id="cod"
                         value="cod"
                         checked={selectedPaymentMethod === 'cod'}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        onChange={handlePaymentMethodChange}
                       />
                       <label className="form-check-label" htmlFor="cod">
                         Cash on Delivery (COD)

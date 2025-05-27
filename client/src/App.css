@@ -38,6 +38,42 @@
   }
 }
 
+.btn-primary{
+background: #0d1b2a;
+}
+.btn-primary:hover {
+  background: #e0e1dd;
+  color: #1b2631;
+}
+.text-primary{
+color: #0d1b2a !important;
+}
+.quantity-btn{
+  background: #0d1b2a;
+}
+.admin-card-icon{
+  color: #0d1b2a;
+}
+.quantity-btn:hover {
+  background: #e0e1dd;
+  color: #1b2631;
+}
+.btn-outline-primary{
+    --bs-btn-color: #0d1b2a;
+    --bs-btn-border-color: #0d1b2a;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0d1b2a;
+    --bs-btn-hover-border-color: #0d1b2a;
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0d1b2a;
+    --bs-btn-active-border-color: #0d1b2a;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #0d1b2a;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #0d1b2a;
+    --bs-gradient: none;
+}
 /* Navbar */
 
 .nav-head {
@@ -82,13 +118,13 @@
 /* banner */
 
 .main-banner {
-  width: 70%;
+  width: 60%;
 }
 
 .banner-img {
   width: 40%;
   position: absolute;
-  top: 100px;
+  top: 120px;
   right: 0;
 }
 
@@ -97,7 +133,34 @@
 }
 
 .discription-main {
+  position: absolute;
   background: #0d1b2a;
   color: #e0e1dd;
-
+  width: 50%;
+  right: -20px;
 }
+.main-description{
+  width: 100%;
+  position: relative;
+  height: 200px;
+}
+.main-card{
+  height: 420px;
+  position: relative;
+}
+.product-list-end{
+  position: absolute;
+  bottom: 20px;
+}
+
+.view-detail{
+  margin-left: 10px;
+}
+.button-list{
+  position: absolute;
+  bottom: 20px;
+}
+.card-body-class{
+  height: 220px;
+}
+

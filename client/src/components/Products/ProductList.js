@@ -119,7 +119,7 @@ const ProductList = () => {
       {/* Products Grid */}
       <div className="row g-4">
         {products.map(product => (
-          <div key={product.id} className="col-md-4 col-lg-3">
+          <div key={product.id} className="col-md-4 col-lg-3 main-card">
             <div className="card h-100 product-card">
               <img 
                 src={product.imageUrl} 
@@ -130,7 +130,7 @@ const ProductList = () => {
               <div className="card-body">
                 <h5 className="card-title">{product.name}</h5>
                 <p className="card-text text-muted small">{product.description}</p>
-                <div className="d-flex justify-content-between align-items-center">
+                <div>
                   <div>
                     <span className="h5 mb-0">₹{product.sellingPrice}</span>
                     {product.mrp > product.sellingPrice && (
@@ -139,7 +139,7 @@ const ProductList = () => {
                       </span>
                     )}
                   </div>
-                  <div className="d-flex gap-2">
+                  <div className="product-list-end">
                     {product.stockQuantity > 0 ? (
                       <button 
                         className={`btn ${isProductInCart(product.id) ? 'btn-danger' : 'btn-primary'} btn-sm`}
@@ -148,7 +148,7 @@ const ProductList = () => {
                         {isProductInCart(product.id) ? (
                           <>
                             <FaTrash className="me-1" />
-                            Remove
+                            Remove from Cart
                           </>
                         ) : (
                           <>
@@ -162,7 +162,7 @@ const ProductList = () => {
                         Out of Stock
                       </button>
                     )}
-                    <Link to={`/products/${product.id}`} className="btn btn-outline-primary btn-sm">
+                    <Link to={`/products/${product.id}`} className="btn btn-outline-primary btn-sm view-detail">
                       View Details
                     </Link>
                   </div>
